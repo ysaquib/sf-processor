@@ -23,6 +23,7 @@ go 1.17
 
 require (
 	github.com/actgardner/gogen-avro/v7 v7.3.1
+	github.com/influxdata/go-syslog v1.0.1
 	github.com/linkedin/goavro v2.1.0+incompatible
 	github.com/spf13/viper v1.6.3
 	github.com/sysflow-telemetry/sf-apis/go v0.0.0-20220221182316-8e41f56e373e
