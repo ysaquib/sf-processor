@@ -1,0 +1,4 @@
+- rule: Hash enrichment
+  desc: Tags matched record with their corresponding hashes
+  condition: sf.type = "PE"
+  actions: [hash]
