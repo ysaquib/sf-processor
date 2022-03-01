@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020 IBM Corporation.
+// Copyright (C) 2022 IBM Corporation.
 //
 // Authors:
 // Frederico Araujo <frederico.araujo@ibm.com>
@@ -17,8 +17,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package syslog implements pluggable drivers for syslog ingestion.
-package syslog
+// Package log implements pluggable drivers for log ingestion.
+package log
 
 import (
 	"os"
@@ -28,38 +28,38 @@ import (
 )
 
 const (
-	syslogDriverName = "syslog"
+	auditDriverName = "audit"
 )
 
-// SyslogDriver is a driver for reading and parsing syslog data
-type SyslogDriver struct {
+// AuditDriver is a driver for reading and parsing audit data
+type AuditDriver struct {
 	pipeline plugins.SFPipeline
 	file     *os.File
 }
 
-// NewSyslogDriver creates a new syslog driver object
-func NewSyslogDriver() plugins.SFDriver {
-	return &SyslogDriver{}
+// NewAuditDriver creates a new audit driver object
+func NewAuditDriver() plugins.SFDriver {
+	return &AuditDriver{}
 }
 
 // GetName returns the driver name.
-func (s *SyslogDriver) GetName() string {
-	return syslogDriverName
+func (s *AuditDriver) GetName() string {
+	return auditDriverName
 }
 
 // Register registers driver to plugin cache
-func (s *SyslogDriver) Register(pc plugins.SFPluginCache) {
-	pc.AddDriver(syslogDriverName, NewSyslogDriver)
+func (s *AuditDriver) Register(pc plugins.SFPluginCache) {
+	pc.AddDriver(auditDriverName, NewAuditDriver)
 }
 
 // Init initializes the file driver with the pipeline
-func (s *SyslogDriver) Init(pipeline plugins.SFPipeline) error {
+func (s *AuditDriver) Init(pipeline plugins.SFPipeline) error {
 	s.pipeline = pipeline
 	return nil
 }
 
 // Run runs the file driver
-func (s *SyslogDriver) Run(path string, running *bool) error {
+func (s *AuditDriver) Run(path string, running *bool) error {
 	channel := s.pipeline.GetRootChannel()
 	sfChannel := channel.(*plugins.SFChannel)
 	records := sfChannel.In
@@ -109,8 +109,8 @@ func (s *SyslogDriver) Run(path string, running *bool) error {
 }
 
 // Cleanup tears down the driver resources.
-func (s *SyslogDriver) Cleanup() {
-	logger.Trace.Println("Exiting ", syslogDriverName)
+func (s *AuditDriver) Cleanup() {
+	logger.Trace.Println("Exiting ", auditDriverName)
 	if s.file != nil {
 		s.file.Close()
 	}

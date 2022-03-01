@@ -23,7 +23,7 @@ go 1.17
 
 require (
 	github.com/actgardner/gogen-avro/v7 v7.3.1
-	github.com/influxdata/go-syslog v1.0.1
+	github.com/google/go-cmp v0.5.7
 	github.com/linkedin/goavro v2.1.0+incompatible
 	github.com/spf13/viper v1.6.3
 	github.com/sysflow-telemetry/sf-apis/go v0.0.0-20220221182316-8e41f56e373e
@@ -69,6 +69,7 @@ require (
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
