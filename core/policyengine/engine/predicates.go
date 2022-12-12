@@ -27,38 +27,46 @@ import (
 )
 
 // Predicate defines the type of a functional predicate.
-type Predicate func(*Record) bool
+type Predicate[R any] func(R) (bool, error)
 
 // True defines a functional predicate that always returns true.
-var True = Criterion{func(r *Record) bool { return true }}
+var True = Criterion[*Record]{func(r *Record) (bool, error) { return true, nil }}
 
 // False defines a functional predicate that always returns false.
-var False = Criterion{func(r *Record) bool { return false }}
+var False = Criterion[*Record]{func(r *Record) (bool, error) { return false, nil }}
 
 // Criterion defines an interface for functional predicate operations.
-type Criterion struct {
-	Pred Predicate
+type Criterion[R any] struct {
+	Pred Predicate[R]
 }
 
 // Eval evaluates a functional predicate.
-func (c Criterion) Eval(r *Record) bool {
+func (c Criterion[R]) Eval(r R) (bool, error) {
 	return c.Pred(r)
 }
 
 // And computes the conjunction of two functional predicates.
-func (c Criterion) And(cr Criterion) Criterion {
-	var p Predicate = func(r *Record) bool { return c.Eval(r) && cr.Eval(r) }
-	return Criterion{p}
+func (c Criterion[R]) And(cr Criterion[R]) Criterion[R] {
+	var p Predicate[R] = func(r R) (res bool, err error) {
+		var b1, b2 Criterion[R]
+		if b1, err = c.Eval(r); err != nil {
+			if b2, err = c.Eval(r); err != nil {
+				return b1 && b2, err
+			}
+		}
+		return false, err
+	}
+	return Criterion[R]{p}
 }
 
 // Or computes the conjunction of two functional predicates.
-func (c Criterion) Or(cr Criterion) Criterion {
+func (c Criterion[R]) Or(cr Criterion) Criterion {
 	var p Predicate = func(r *Record) bool { return c.Eval(r) || cr.Eval(r) }
 	return Criterion{p}
 }
 
 // Not computes the negation of the function predicate.
-func (c Criterion) Not() Criterion {
+func (c Criterion[R]) Not() Criterion {
 	var p Predicate = func(r *Record) bool { return !c.Eval(r) }
 	return Criterion{p}
 }
