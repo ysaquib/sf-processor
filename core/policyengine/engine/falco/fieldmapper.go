@@ -17,8 +17,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package engine implements a rules engine for telemetry records.
-package engine
+// Package falco implements a rules engine based on falco rules.
+package falco
 
 import (
 	"fmt"
@@ -260,10 +260,11 @@ func getMappers() map[string]*FieldEntry {
 
 // getExportedMappers defines all mappers for exported attributes.
 // A FieldEntry defines a mapped attribute for the policy engine.
-// 		Map: mapping function
-//		FlatIndex: index in the flat record structure
-//		Type: mapping function return type; if "MapSpecial*", the function modifies the input data
-// 		Source: source field in the flat record structure
+//
+//	Map: mapping function
+//	FlatIndex: index in the flat record structure
+//	Type: mapping function return type; if "MapSpecial*", the function modifies the input data
+//	Source: source field in the flat record structure
 func getExportedMappers() map[string]*FieldEntry {
 	return map[string]*FieldEntry{
 		// SysFlow

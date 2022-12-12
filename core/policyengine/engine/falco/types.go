@@ -18,8 +18,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package engine implements a rules engine for telemetry records.
-package engine
+// Package falco implements a rules engine based on falco rules.
+package falco
 
 import (
 	"path/filepath"
@@ -84,7 +84,6 @@ type Record struct {
 	Fr  sfgo.FlatRecord
 	Ctx Context
 }
-
 
 // NewRecord creates a new Record isntance.
 func NewRecord(fr sfgo.FlatRecord) *Record {
@@ -340,8 +339,7 @@ const (
 )
 
 type HashSet struct {
-	Md5    string  `json:"md5,omitempty"`
-	Sha1   string  `json:"sha1,omitempty"`
-	Sha256 string  `json:"sha256,omitempty"`
+	Md5    string `json:"md5,omitempty"`
+	Sha1   string `json:"sha1,omitempty"`
+	Sha256 string `json:"sha256,omitempty"`
 }
-
