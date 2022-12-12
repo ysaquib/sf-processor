@@ -48,7 +48,7 @@ func (c Criterion[R]) Eval(r R) (bool, error) {
 // And computes the conjunction of two functional predicates.
 func (c Criterion[R]) And(cr Criterion[R]) Criterion[R] {
 	var p Predicate[R] = func(r R) (res bool, err error) {
-		var b1, b2 Criterion[R]
+		var b1, b2 bool
 		if b1, err = c.Eval(r); err != nil {
 			if b2, err = c.Eval(r); err != nil {
 				return b1 && b2, err
@@ -60,19 +60,32 @@ func (c Criterion[R]) And(cr Criterion[R]) Criterion[R] {
 }
 
 // Or computes the conjunction of two functional predicates.
-func (c Criterion[R]) Or(cr Criterion) Criterion {
-	var p Predicate = func(r *Record) bool { return c.Eval(r) || cr.Eval(r) }
-	return Criterion{p}
+func (c Criterion[R]) Or(cr Criterion[R]) Criterion[R] {
+	var p Predicate[R] = func(r R) (res bool, err error) {
+		var b1, b2 bool
+		if b1, err = c.Eval(r); err != nil {
+			if b2, err = c.Eval(r); err != nil {
+				return b1 || b2, err
+			}
+		}
+		return false, err
+	}
+	return Criterion[R]{p}
 }
 
 // Not computes the negation of the function predicate.
-func (c Criterion[R]) Not() Criterion {
-	var p Predicate = func(r *Record) bool { return !c.Eval(r) }
-	return Criterion{p}
+func (c Criterion[R]) Not() Criterion[R] {
+	var p Predicate[R] = func(r R) (res bool, err error) {
+		if res, err = c.Eval(r); err != nil {
+			return !res, err
+		}
+		return false, err
+	}
+	return Criterion[R]{p}
 }
 
 // All derives the conjuctive clause of all predicates in a slice of predicates.
-func All(criteria []Criterion) Criterion {
+func All[R any](criteria []Criterion[R]) Criterion[R] {
 	all := True
 	for _, c := range criteria {
 		all = all.And(c)
@@ -81,7 +94,7 @@ func All(criteria []Criterion) Criterion {
 }
 
 // Any derives the disjuntive clause of all predicates in a slice of predicates.
-func Any(criteria []Criterion) Criterion {
+func Any[R any](criteria []Criterion[R]) Criterion[R] {
 	any := False
 	for _, c := range criteria {
 		any = any.Or(c)
