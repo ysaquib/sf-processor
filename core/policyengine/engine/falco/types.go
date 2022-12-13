@@ -27,56 +27,23 @@ import (
 	"strings"
 
 	"github.com/sysflow-telemetry/sf-apis/go/sfgo"
+	"github.com/sysflow-telemetry/sf-processor/core/policyengine/engine"
 )
 
-// EnrichmentTag denotes the type for enrichment tags.
-type EnrichmentTag interface{}
+// Prefilter defines a prefilter object
+type Prefilter struct{}
 
-// Priority denotes the type for rule priority.
-type Priority int
-
-// Priority enumeration.
-const (
-	Low Priority = iota
-	Medium
-	High
-)
-
-// String returns the string representation of a priority instance.
-func (p Priority) String() string {
-	return [...]string{"low", "medium", "high"}[p]
-}
-
-// Rule type
-type Rule struct {
-	Name      string
-	Desc      string
-	condition Criterion
-	Actions   []string
-	Tags      []EnrichmentTag
-	Priority  Priority
-	Prefilter []string
-	Enabled   bool
-}
-
-func (s Rule) isApplicable(r *Record) bool {
-	if len(s.Prefilter) == 0 {
+func (s Prefilter) IsApplicable(r *Record, rule *engine.Rule) bool {
+	if len(rule.Prefilter) == 0 {
 		return true
 	}
 	rtype := Mapper.MapStr(SF_TYPE)(r)
-	for _, pf := range s.Prefilter {
+	for _, pf := range rule.Prefilter {
 		if rtype == pf {
 			return true
 		}
 	}
 	return false
-}
-
-// Filter type
-type Filter struct {
-	Name      string
-	condition Criterion
-	Enabled   bool
 }
 
 // Record type
@@ -275,17 +242,17 @@ func (s Context) SetAlert(isAlert bool) {
 }
 
 // AddRule adds a rule instance to the set of rules matching a record.
-func (s Context) AddRule(r Rule) {
+func (s Context) AddRule(r engine.Rule) {
 	if s[ruleCtxKey] == nil {
-		s[ruleCtxKey] = make([]Rule, 0)
+		s[ruleCtxKey] = make([]engine.Rule, 0)
 	}
-	s[ruleCtxKey] = append(s[ruleCtxKey].([]Rule), r)
+	s[ruleCtxKey] = append(s[ruleCtxKey].([]engine.Rule), r)
 }
 
 // GetRules retrieves the list of stored rules associated with a record context.
-func (s Context) GetRules() []Rule {
+func (s Context) GetRules() []engine.Rule {
 	if s[ruleCtxKey] != nil {
-		return s[ruleCtxKey].([]Rule)
+		return s[ruleCtxKey].([]engine.Rule)
 	}
 	return nil
 }

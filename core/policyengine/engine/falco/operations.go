@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020 IBM Corporation.
+// Copyright (C) 2022 IBM Corporation.
 //
 // Authors:
 // Frederico Araujo <frederico.araujo@ibm.com>
@@ -26,7 +26,6 @@ import (
 	"strings"
 
 	"github.com/sysflow-telemetry/sf-processor/core/policyengine/engine"
-	"github.ibm.com/sysflow/sf-processor-filehasher/core/policyengine/engine"
 )
 
 // True defines a functional predicate that always returns true.
@@ -35,8 +34,7 @@ var True = engine.Criterion[*Record]{func(r *Record) (bool, error) { return true
 // False defines a functional predicate that always returns false.
 var False = engine.Criterion[*Record]{func(r *Record) (bool, error) { return false, nil }}
 
-type Operations struct {
-}
+type Operations struct{}
 
 // All derives the conjuctive clause of all predicates in a slice of predicates.
 func (op Operations) All(criteria []engine.Criterion[*Record]) engine.Criterion[*Record] {

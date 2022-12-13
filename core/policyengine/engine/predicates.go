@@ -21,7 +21,7 @@
 package engine
 
 // Predicate defines the type of a functional predicate.
-type Predicate[R any] func(R) (bool, error)
+type Predicate[R any] func(R) bool
 
 // Criterion defines an interface for functional predicate operations.
 type Criterion[R any] struct {
@@ -29,45 +29,24 @@ type Criterion[R any] struct {
 }
 
 // Eval evaluates a functional predicate.
-func (c Criterion[R]) Eval(r R) (bool, error) {
+func (c Criterion[R]) Eval(r R) bool {
 	return c.Pred(r)
 }
 
 // And computes the conjunction of two functional predicates.
 func (c Criterion[R]) And(cr Criterion[R]) Criterion[R] {
-	var p Predicate[R] = func(r R) (res bool, err error) {
-		var b1, b2 bool
-		if b1, err = c.Eval(r); err != nil {
-			if b2, err = c.Eval(r); err != nil {
-				return b1 && b2, err
-			}
-		}
-		return false, err
-	}
+	var p Predicate[R] = func(r R) bool { return c.Eval(r) && cr.Eval(r) }
 	return Criterion[R]{p}
 }
 
 // Or computes the conjunction of two functional predicates.
 func (c Criterion[R]) Or(cr Criterion[R]) Criterion[R] {
-	var p Predicate[R] = func(r R) (res bool, err error) {
-		var b1, b2 bool
-		if b1, err = c.Eval(r); err != nil {
-			if b2, err = c.Eval(r); err != nil {
-				return b1 || b2, err
-			}
-		}
-		return false, err
-	}
+	var p Predicate[R] = func(r R) bool { return c.Eval(r) || cr.Eval(r) }
 	return Criterion[R]{p}
 }
 
 // Not computes the negation of the function predicate.
 func (c Criterion[R]) Not() Criterion[R] {
-	var p Predicate[R] = func(r R) (res bool, err error) {
-		if res, err = c.Eval(r); err != nil {
-			return !res, err
-		}
-		return false, err
-	}
+	var p Predicate[R] = func(r R) bool { return !c.Eval(r) }
 	return Criterion[R]{p}
 }
